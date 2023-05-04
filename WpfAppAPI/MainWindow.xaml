@@ -1,0 +1,59 @@
+﻿<Window x:Class="WpfAppAPI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfAppAPI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="1" Margin="20">
+            <StackPanel Margin="4">
+                <TextBlock Text="Добавление пользователя" FontSize="27"/>
+            </StackPanel>
+
+            <StackPanel Margin="4">
+                <TextBlock Text="Имя"/>
+                <TextBox x:Name="edName"/>
+            </StackPanel>
+
+            <StackPanel Margin="4">
+                <TextBlock Text="Возраст"/>
+                <TextBox x:Name="edAge"/>
+            </StackPanel>
+
+            <StackPanel Margin="4">
+                <TextBlock Text="Роль"/>
+                <ComboBox x:Name="cmbRole" SelectionChanged="cmbRole_SelectionChanged"/>
+            </StackPanel>
+
+            <StackPanel Margin="4">
+                <Button Content="Добавть" Click="Button_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="20">
+            <StackPanel>
+                <TextBlock Text="Пользователи" FontSize="27"/>
+            </StackPanel>
+            <DataGrid x:Name="listTemplate" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Имя"  Binding="{Binding Path=Name}"/>
+                    <DataGridTextColumn Header="Роль" Binding="{Binding Path=RoleName}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </Grid>
+</Window>

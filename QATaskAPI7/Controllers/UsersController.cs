@@ -13,13 +13,13 @@ namespace QATaskAPI7.Controllers
 {
     public class UsersController : ApiController
     {
-        private QATaskAPIEntities1 Connection = new QATaskAPIEntities1();
+        private QATaskAPIEntities3 Connection = new QATaskAPIEntities3();
 
         [HttpGet]
-        [Route("api/user/get/{id}")]
+        [Route("api/user/get/{name}")]
         public IHttpActionResult GetUser(String name)
         {
-            var foundUser = Connection.Product.FirstOrDefault(x => x.Name == name);
+            var foundUser = Connection.User.FirstOrDefault(x => x.Name == name);
             
             if (foundUser == null)
             {
@@ -29,7 +29,7 @@ namespace QATaskAPI7.Controllers
             return Ok(new
             {
                 foundUser.Name, 
-                foundUser.Cost
+                foundUser.Age
             });
         }
         
@@ -37,22 +37,23 @@ namespace QATaskAPI7.Controllers
         [Route("api/users/get/")]
         public IHttpActionResult GetUsers()
         {
-            var list = Connection.Product.ToList();
+            var list = Connection.User.ToList();
 
             if (list == null)
             {
                 return BadRequest();
             }
-            return Ok(new { list });
+            return Ok(list.Select(u => new
+            { u.Id, u.Name, u.Age, RoleName = u.Role.Name }));
         }
 
         [HttpPost]
         [Route("api/user/post/")]
-        public IHttpActionResult Post(Product product)
+        public IHttpActionResult Post(User user)
         {
-            if (product != null)
+            if (user != null)
             {
-                Connection.Product.Add(product);
+                Connection.User.Add(user);
                 Connection.SaveChanges();
                 return Ok("add succes!");
             }
@@ -64,14 +65,14 @@ namespace QATaskAPI7.Controllers
         [Route("api/user/delete/{name}")]
         public IHttpActionResult DeleteUser(String name)
         {
-            var product = Connection.Product.FirstOrDefault(p => p.Name == name);
+            var product = Connection.User.FirstOrDefault(p => p.Name == name);
 
             if (product == null)
             {
                 return BadRequest("user not found");
             }
 
-            Connection.Product.Remove(product);
+            Connection.User.Remove(product);
             Connection.SaveChanges();
             return Ok(true);
         }
@@ -80,7 +81,7 @@ namespace QATaskAPI7.Controllers
         [Route("api/user/put/{id}")]
         public async Task<IHttpActionResult>  PutUser(int? id)
         {
-            var user = Connection.Product.FirstOrDefault(x => x.ID == id);
+            var user = Connection.User.FirstOrDefault(x => x.Id == id);
 
             if (user == null)
             {
@@ -92,11 +93,5 @@ namespace QATaskAPI7.Controllers
             return Ok();
         }
     }
-
-    public class User
-    {
-        public int Id { get; set; }
-        public String Name { get; set; }
-        public String Email { get; set; }
-    }
+    
 }
