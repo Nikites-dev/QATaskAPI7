@@ -1,86 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
+using QATaskAPI7.Models;
 
 namespace QATaskAPI7.Controllers
 {
     public class UsersController : ApiController
     {
+        private QATaskAPIEntities1 Connection = new QATaskAPIEntities1();
+
         [HttpGet]
         [Route("api/user/get/{id}")]
-        public IHttpActionResult GetUser(int id)
+        public IHttpActionResult GetUser(String name)
         {
-            User user = new User();
-
-            if (user == null)
+            var foundUser = Connection.Product.FirstOrDefault(x => x.Name == name);
+            
+            if (foundUser == null)
             {
-                return BadRequest();
+                return BadRequest("user not found");
             }
 
-            user.Id = id;
-            user.Name = "TestName";
-            user.Email = "test@test.test";
-
-            return Ok(new { user });
+            return Ok(new
+            {
+                foundUser.Name, 
+                foundUser.Cost
+            });
         }
         
         [HttpGet]
         [Route("api/users/get/")]
         public IHttpActionResult GetUsers()
         {
-            List<User> list = new List<User>();
-            User user = new User();
+            var list = Connection.Product.ToList();
 
-            if (user == null)
+            if (list == null)
             {
                 return BadRequest();
             }
-
-            user.Id = 2;
-            user.Name = "TestName";
-            user.Email = "test@test.test";
-            
-            list.Add(user);
-            list.Add(user);
-            list.Add(user);
-            list.Add(user);
-
             return Ok(new { list });
         }
 
         [HttpPost]
         [Route("api/user/post/")]
-        public IHttpActionResult Post(int id, String name, String email)
+        public IHttpActionResult Post(Product product)
         {
-            User newUser = new User();
-            newUser.Id = id;
-            newUser.Email = email;
-            newUser.Name = name;
+            if (product != null)
+            {
+                Connection.Product.Add(product);
+                Connection.SaveChanges();
+                return Ok("add succes!");
+            }
+            return BadRequest("something wrong!");
 
-            return Ok(newUser);
         }
 
         [HttpDelete]
         [Route("api/user/delete/{name}")]
         public IHttpActionResult DeleteUser(String name)
         {
-          
-           return Ok();
+            var product = Connection.Product.FirstOrDefault(p => p.Name == name);
+
+            if (product == null)
+            {
+                return BadRequest("user not found");
+            }
+
+            Connection.Product.Remove(product);
+            Connection.SaveChanges();
+            return Ok(true);
         }
 
         [HttpPut]
         [Route("api/user/put/{id}")]
         public async Task<IHttpActionResult>  PutUser(int? id)
         {
-            if (id == null || id <= 0)
+            var user = Connection.Product.FirstOrDefault(x => x.ID == id);
+
+            if (user == null)
             {
-                return BadRequest();
+                return BadRequest("user not found");
             }
+
+            Connection.Entry(user).State = EntityState.Modified;
+            Connection.SaveChanges();
             return Ok();
         }
     }
